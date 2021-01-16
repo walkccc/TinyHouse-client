@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { Affix, Layout, Spin } from 'antd';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider, useMutation } from 'react-apollo';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import { AppHeaderSkeleton, ErrorBanner } from './lib/components';
 import { LOG_IN } from './lib/graphql/mutations';
 import {
   LogIn as LogInData,
@@ -13,6 +15,8 @@ import {
 import { Viewer } from './lib/types';
 import reportWebVitals from './reportWebVitals';
 import { AppHeader, Home, Login, User } from './sections';
+
+import './index.css';
 
 // "proxy": "http://localhost:8000" in package.json
 const client = new ApolloClient({
@@ -38,7 +42,7 @@ const initialViewer: Viewer = {
 const App = () => {
   const [viewer, setViewer] = useState(initialViewer);
 
-  const [logIn] = useMutation<LogInData, LogInVariables>(LOG_IN, {
+  const [logIn, { error }] = useMutation<LogInData, LogInVariables>(LOG_IN, {
     onCompleted: (data) => {
       if (data && data.logIn) {
         setViewer(data.logIn);
@@ -59,11 +63,28 @@ const App = () => {
     logInRef.current();
   }, []);
 
+  if (!viewer.didRequest && !error) {
+    return (
+      <Layout className="app-skeleton">
+        <AppHeaderSkeleton />
+        <div className="app-skeleton__spin-section">
+          <Spin size="large" tip="Launching TinyHouse" />
+        </div>
+      </Layout>
+    );
+  }
+
+  const logInErrorBanner = error ? (
+    <ErrorBanner description="We weren't able to verify if you were logged in. Please try again later!" />
+  ) : null;
+
   return (
-    <div>
-      <h1>GraphQL OAuth Boilerplate</h1>
+    <Layout id="app">
       <BrowserRouter>
-        <AppHeader viewer={viewer} setViewer={setViewer} />
+        {logInErrorBanner}
+        <Affix offsetTop={0} className="app__affix-header">
+          <AppHeader viewer={viewer} setViewer={setViewer} />
+        </Affix>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route
@@ -74,7 +95,7 @@ const App = () => {
           <Route exact path="/user/:id" component={User} />
         </Switch>
       </BrowserRouter>
-    </div>
+    </Layout>
   );
 };
 

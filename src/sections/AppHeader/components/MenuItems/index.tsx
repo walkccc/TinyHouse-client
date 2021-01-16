@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { HomeOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Button, Menu } from 'antd';
 import { useMutation } from 'react-apollo';
 import { NavLink } from 'react-router-dom';
 
@@ -7,11 +9,14 @@ import { appStrings } from '../../../../i18n';
 import { LOG_OUT } from '../../../../lib/graphql/mutations';
 import { LogOut as LogOutData } from '../../../../lib/graphql/mutations/LogOut/__generated__/LogOut';
 import { Viewer } from '../../../../lib/types';
+import { displaySuccessNotification, displayErrorMessage } from '../../../../lib/utils';
 
 interface Props {
   viewer: Viewer;
   setViewer: (viewer: Viewer) => void;
 }
+
+const { Item, SubMenu } = Menu;
 
 const { LOGOUT: lang } = appStrings;
 
@@ -21,11 +26,11 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
       if (data && data.logOut) {
         setViewer(data.logOut);
         sessionStorage.removeItem('token');
-        <h3>{lang.onCompleted}</h3>;
+        displaySuccessNotification(lang.onCompleted);
       }
     },
     onError: () => {
-      <h3>{lang.error}</h3>;
+      displayErrorMessage(lang.error);
     },
   });
 
@@ -35,13 +40,37 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
 
   const { id, avatar } = viewer;
 
-  return id && avatar ? (
-    <div>
-      <NavLink to={`/user/${id}`}>Go to '/user/{id}'</NavLink>
-      <br />
-      <button onClick={handleLogout}>Log out</button>
-    </div>
-  ) : (
-    <NavLink to={`/login`}>Go to '/login'</NavLink>
+  const subMenuLogin =
+    id && avatar ? (
+      <SubMenu title={<Avatar src={avatar} />}>
+        <Item key="/user">
+          <NavLink to={`/user/${id}`}>
+            <UserOutlined></UserOutlined>
+            Profile
+          </NavLink>
+        </Item>
+        <Item key="/logout" onClick={handleLogout}>
+          <LogoutOutlined></LogoutOutlined>
+          Log out
+        </Item>
+      </SubMenu>
+    ) : (
+      <Item>
+        <NavLink to="/login">
+          <Button type="primary">Sign In</Button>
+        </NavLink>
+      </Item>
+    );
+
+  return (
+    <Menu mode="horizontal" selectable={false} className="menu">
+      <Item key="/host">
+        <NavLink to="/host">
+          <HomeOutlined />
+          Host
+        </NavLink>
+      </Item>
+      {subMenuLogin}
+    </Menu>
   );
 };

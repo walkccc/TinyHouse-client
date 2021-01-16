@@ -1,7 +1,9 @@
 import React from 'react';
 
+import { Layout } from 'antd';
 import { NavLink } from 'react-router-dom';
 
+import logo from './assets/tinyhouse-logo.png';
 import { MenuItems } from './components';
 
 import { Viewer } from '../../lib/types';
@@ -11,13 +13,21 @@ interface Props {
   setViewer: (viewer: Viewer) => void;
 }
 
+const { Header } = Layout;
+
 export const AppHeader = ({ viewer, setViewer }: Props) => {
   return (
-    <header>
-      <h2>Navigation</h2>
-      <NavLink to="/">Go to '/'</NavLink>
-      <br />
-      <MenuItems viewer={viewer} setViewer={setViewer} />
-    </header>
+    <Header className="app-header">
+      <div className="app-header__logo-search-section">
+        <div className="app-header__logo">
+          <NavLink to="/">
+            <img src={logo} alt="TinyHouse logo" />
+          </NavLink>
+        </div>
+      </div>
+      <div className="app-header__menu-section">
+        <MenuItems viewer={viewer} setViewer={setViewer} />
+      </div>
+    </Header>
   );
 };
