@@ -34,6 +34,10 @@ export const appStrings = {
   },
   LISTING: {
     error: "This listing may not exist or we've encountered an error",
+    DETAILS: {
+      about: 'About this space',
+      guests: 'guests',
+    },
   },
   BOOKINGS: {
     bookings: 'Bookings',
