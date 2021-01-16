@@ -23,12 +23,13 @@ interface MatchParams {
 const { Content } = Layout;
 
 const { USER: lang } = appStrings;
+const PAGE_LIMIT = 4;
 
 export const User = ({ viewer }: Props) => {
   const match = useRouteMatch<MatchParams>();
 
   const { data, loading, error } = useQuery<UserData, UserVariables>(USER, {
-    variables: { id: match.params.id },
+    variables: { id: match.params.id, limit: PAGE_LIMIT, listingsPage: 1, bookingsPage: 1 },
   });
 
   const user = data?.user;
