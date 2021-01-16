@@ -32,6 +32,9 @@ export const appStrings = {
         'This section highlights the listings this user currently hosts and has made available for bookings.',
     },
   },
+  LISTING: {
+    error: "This listing may not exist or we've encountered an error",
+  },
   BOOKINGS: {
     bookings: 'Bookings',
     emptyText: 'No bookings for this listing!',
