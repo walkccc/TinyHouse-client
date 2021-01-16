@@ -25,9 +25,27 @@ export const appStrings = {
       name: 'Name',
       contact: 'Contact',
     },
+    LISTINGS: {
+      listings: 'Listings',
+      emptyText: "User doesn't have any listings yet!",
+      explanation:
+        'This section highlights the listings this user currently hosts and has made available for bookings.',
+    },
+  },
+  BOOKINGS: {
+    bookings: 'Bookings',
+    emptyText: 'No bookings for this listing!',
+    checkIn: 'Check in',
+    checkOut: 'Check out',
+    explanation:
+      "This section highlights the bookings you've made, and the check-in/check-out dates associated with said bookings.",
   },
   ERROR_BANNER: {
     message: 'Oh no! Something went wrong :(',
     description: 'Sorry, but something went wrong. Please check you connection and try again.',
+  },
+  LISTING_CARD: {
+    day: 'day',
+    guests: 'guests',
   },
 };
