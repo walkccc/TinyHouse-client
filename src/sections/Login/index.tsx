@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 
+import { GithubFilled, GoogleSquareFilled } from '@ant-design/icons';
+import { Button, Card, Layout, Spin, Typography } from 'antd';
 import { useApolloClient, useMutation } from 'react-apollo';
 import { Redirect } from 'react-router-dom';
 
 import { appStrings } from '../../i18n';
+import { ErrorBanner } from '../../lib/components';
 import { LoginType } from '../../lib/graphql/globalTypes';
 import { LOG_IN } from '../../lib/graphql/mutations';
 import {
@@ -16,10 +19,14 @@ import {
   AuthUrlVariables,
 } from '../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl';
 import { Viewer } from '../../lib/types';
+import { displayErrorMessage, displaySuccessNotification } from '../../lib/utils';
 
 interface Props {
   setViewer: (viewer: Viewer) => void;
 }
+
+const { Content } = Layout;
+const { Text, Title } = Typography;
 
 const { LOGIN: lang } = appStrings;
 
@@ -30,11 +37,11 @@ export const Login = ({ setViewer }: Props) => {
       if (data && data.logIn && data.logIn.token) {
         sessionStorage.setItem('token', data.logIn.token);
         setViewer(data.logIn);
-        <h3>{lang.onCompleted}</h3>;
+        displaySuccessNotification(lang.onCompleted);
       }
     },
     onError: () => {
-      <h3>{lang.error}</h3>;
+      displayErrorMessage(lang.error);
     },
   });
   const logInRef = useRef(logIn);
@@ -72,10 +79,9 @@ export const Login = ({ setViewer }: Props) => {
 
   if (loading) {
     return (
-      <div>
-        <h2>/login</h2>
-        <h3>{lang.loading}</h3>
-      </div>
+      <Content className="log-in">
+        <Spin size="large" tip={lang.loading} />
+      </Content>
     );
   }
 
@@ -84,14 +90,42 @@ export const Login = ({ setViewer }: Props) => {
     return <Redirect to={`/user/${id}`} />;
   }
 
-  const errorMessage = error ? <h3>{lang.error}</h3> : null;
+  const errorMessage = error ? <ErrorBanner description={lang.error} /> : null;
 
   return (
-    <div>
-      <h2>/login</h2>
+    <Content className="log-in">
       {errorMessage}
-      <button onClick={() => handleAuth(LoginType.GITHUB)}>{lang.loginVia('GitHub')}</button>
-      <button onClick={() => handleAuth(LoginType.GOOGLE)}>{lang.loginVia('Google')}</button>
-    </div>
+      <Card className="log-in-card">
+        <div className="log-in-card__intro-title">
+          <Title level={3} className="log-in-card__intro-title">
+            <span role="img" aria-label="wave">
+              👋
+            </span>
+          </Title>
+          <Title level={3} className="log-in-card__intro-title">
+            Log in to HugeHouse!
+          </Title>
+          <Text>Sign in to book available rentals!</Text>
+        </div>
+        <br />
+        <Button icon={<GithubFilled />} size="large" onClick={() => handleAuth(LoginType.GITHUB)}>
+          Sign in with GitHub
+        </Button>
+        <br />
+        <br />
+        <Button
+          icon={<GoogleSquareFilled />}
+          size="large"
+          onClick={() => handleAuth(LoginType.GOOGLE)}
+        >
+          Sign in with Google
+        </Button>
+        <br />
+        <br />
+        <Text type="secondary">
+          Note: By signing in, you'll be redirected to the the third parth consent form to sign in.
+        </Text>
+      </Card>
+    </Content>
   );
 };
