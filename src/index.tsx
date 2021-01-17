@@ -14,7 +14,7 @@ import {
 } from './lib/graphql/mutations/LogIn/__generated__/LogIn';
 import { Viewer } from './lib/types';
 import reportWebVitals from './reportWebVitals';
-import { AppHeader, Home, Listing, Login, User } from './sections';
+import { AppHeader, Home, Listing, Listings, Login, User } from './sections';
 
 import './index.css';
 
@@ -88,6 +88,7 @@ const App = () => {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/listing/:id" component={Listing} />
+          <Route exact path="/listings/:location?" component={Listings} />
           <Route
             exact
             path="/login"

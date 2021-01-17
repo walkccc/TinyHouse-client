@@ -60,6 +60,11 @@ export const appStrings = {
       bookButton: 'Request to book!',
     },
   },
+  LISTINGS: {
+    emptyList: 'It appears that no listings have yet been created for',
+    host: 'Be the first person to create a listing in this area!',
+    results: 'Results for',
+  },
   BOOKINGS: {
     bookings: 'Bookings',
     emptyText: 'No bookings for this listing!',
