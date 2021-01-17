@@ -41,13 +41,23 @@ export const Listing = ({ viewer }: Props) => {
   const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const { data, loading, error } = useQuery<ListingData, ListingVariables>(LISTING, {
+  const { data, loading, error, refetch } = useQuery<ListingData, ListingVariables>(LISTING, {
     variables: {
       id: match.params.id,
       limit: PAGE_LIMIT,
       bookingsPage,
     },
   });
+
+  const clearBookingDate = () => {
+    setModalVisible(false);
+    setCheckInDate(null);
+    setCheckOutDate(null);
+  };
+
+  const handleListingRefetch = async () => {
+    await refetch();
+  };
 
   const listing = data?.listing;
   const listingBookings = listing?.bookings;
@@ -81,11 +91,14 @@ export const Listing = ({ viewer }: Props) => {
     listing && checkInDate && checkOutDate ? (
       <Elements stripe={stripePromise}>
         <ListingCreateBookingModal
+          id={listing.id}
           price={listing.price}
           checkInDate={checkInDate}
           checkOutDate={checkOutDate}
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
+          clearBookingDate={clearBookingDate}
+          handleListingRefetch={handleListingRefetch}
         />
       </Elements>
     ) : null;

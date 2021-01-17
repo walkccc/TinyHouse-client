@@ -3,17 +3,30 @@ import React from 'react';
 import { KeyOutlined } from '@ant-design/icons';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Modal, Button, Divider, Typography } from 'antd';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
+import { useMutation } from 'react-apollo';
 
 import { appStrings } from '../../../../i18n';
-import { formatListingPrice } from '../../../../lib/utils';
+import { CREATE_BOOKING } from '../../../../lib/graphql/mutations';
+import {
+  CreateBooking as CreateBookingData,
+  CreateBookingVariables,
+} from '../../../../lib/graphql/mutations/CreateBooking/__generated__/CreateBooking';
+import {
+  displayErrorMessage,
+  displaySuccessNotification,
+  formatListingPrice,
+} from '../../../../lib/utils';
 
 interface Props {
+  id: string;
   price: number;
   modalVisible: boolean;
   checkInDate: Moment;
   checkOutDate: Moment;
   setModalVisible: (modalVisible: boolean) => void;
+  clearBookingDate: () => void;
+  handleListingRefetch: () => Promise<void>;
 }
 
 const { Title, Text, Paragraph } = Typography;
@@ -23,14 +36,31 @@ const {
 } = appStrings;
 
 export const ListingCreateBookingModal = ({
+  id,
   price,
   modalVisible,
   checkInDate,
   checkOutDate,
   setModalVisible,
+  clearBookingDate,
+  handleListingRefetch,
 }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
+
+  const [createBooking, { loading }] = useMutation<CreateBookingData, CreateBookingVariables>(
+    CREATE_BOOKING,
+    {
+      onCompleted: () => {
+        clearBookingDate();
+        displaySuccessNotification(lang.onCompletedMessage, lang.onCompletedDescription);
+        handleListingRefetch();
+      },
+      onError: () => {
+        displayErrorMessage(lang.error);
+      },
+    }
+  );
 
   const daysBooked = checkOutDate.diff(checkInDate, 'days') + 1;
   const listingPrice = daysBooked * price;
@@ -39,7 +69,7 @@ export const ListingCreateBookingModal = ({
     event.preventDefault();
 
     if (!stripe || !elements) {
-      return;
+      return displayErrorMessage(lang.stripeError);
     }
 
     const card = elements.getElement(CardElement);
@@ -47,7 +77,22 @@ export const ListingCreateBookingModal = ({
       return;
     }
 
-    await stripe.createPaymentMethod({ type: 'card', card });
+    const { token, error } = await stripe.createToken(card);
+
+    if (token) {
+      createBooking({
+        variables: {
+          input: {
+            id,
+            source: token.id,
+            checkIn: moment(checkInDate).format('YYYY-MM-DD'),
+            checkOut: moment(checkOutDate).format('YYYY-MM-DD'),
+          },
+        },
+      });
+    } else {
+      displayErrorMessage(error && error.message ? error.message : lang.error);
+    }
   };
 
   return (
@@ -95,6 +140,7 @@ export const ListingCreateBookingModal = ({
           <Button
             size="large"
             type="primary"
+            loading={loading}
             onClick={handleCreateBooking}
             className="listing-booking-modal__cta"
           >

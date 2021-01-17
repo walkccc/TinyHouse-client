@@ -132,6 +132,10 @@ export const appStrings = {
       inclusive: ', inclusive.',
       total: 'Total',
       book: 'Book',
+      onCompletedMessage: "You've successfully booked the listing!",
+      onCompletedDescription: 'Booking history can always be found in your User page.',
+      error: "Soory! We weren't able to book the listing. Please try again later!",
+      stripeError: "Sorry! We weren't able to connect with Stripe.",
     },
   },
   LISTINGS: {
