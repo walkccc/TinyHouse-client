@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Affix, Layout, List, Typography } from 'antd';
 import { useQuery } from 'react-apollo';
@@ -28,11 +28,13 @@ const { LISTINGS: lang } = appStrings;
 
 export const Listings = () => {
   const match = useRouteMatch<MatchParams>();
+  const locationRef = useRef(match.params.location);
 
   const [filter, setFilter] = useState(ListingsFilter.PRICE_LOW_TO_HIGH);
   const [page, setPage] = useState(1);
 
   const { data, loading, error } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
+    skip: locationRef.current !== match.params.location && page !== 1,
     variables: {
       location: match.params.location,
       filter,
@@ -40,6 +42,12 @@ export const Listings = () => {
       page,
     },
   });
+
+  // when location change, we'll set page to 1, thus force a new query
+  useEffect(() => {
+    setPage(1);
+    locationRef.current = match.params.location;
+  }, [match.params.location]);
 
   const listings = data?.listings;
   const listingsRegion = listings?.region;

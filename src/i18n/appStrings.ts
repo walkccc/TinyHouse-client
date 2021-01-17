@@ -3,6 +3,10 @@ export const appStrings = {
     locale: 'en-US',
     lang: 'English',
   },
+  APP_HEADER: {
+    onSearchError: 'Please enter a valid search',
+    searchPlaceHolder: "Search 'New York'",
+  },
   LOGIN: {
     onCompleted: "You've successfully logged in!",
     loading: 'Logging you in...',
