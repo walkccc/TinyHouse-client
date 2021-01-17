@@ -17,6 +17,11 @@ import {
   Listing as ListingData,
   ListingVariables,
 } from '../../lib/graphql/queries/Listing/__generated__/Listing';
+import { Viewer } from '../../lib/types';
+
+interface Props {
+  viewer: Viewer;
+}
 
 interface MatchParams {
   id: string;
@@ -25,7 +30,7 @@ interface MatchParams {
 const { LISTING: lang } = appStrings;
 const PAGE_LIMIT = 3;
 
-export const Listing = () => {
+export const Listing = ({ viewer }: Props) => {
   const match = useRouteMatch<MatchParams>();
 
   const [bookingsPage, setBookingsPage] = useState(1);
@@ -56,7 +61,10 @@ export const Listing = () => {
 
   const listingCreateBookingElement = listing ? (
     <ListingCreateBooking
+      viewer={viewer}
+      host={listing.host}
       price={listing.price}
+      bookingsIndex={listing.bookingsIndex}
       checkInDate={checkInDate}
       checkOutDate={checkOutDate}
       setCheckInDate={setCheckInDate}

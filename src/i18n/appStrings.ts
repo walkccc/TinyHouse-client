@@ -113,10 +113,17 @@ export const appStrings = {
     },
     CREATE_BOOKING: {
       dateError: "You can't book date of check out to be prior to check in!",
+      dateOverlapsError:
+        "You can't book a period of time that overlaps existing bookings. Please try again!",
       day: 'day',
       checkIn: 'Check in',
       checkOut: 'Check out',
       bookButton: 'Request to book!',
+      wontBeCharged: "You won't be charged yet",
+      signInRequird: 'You have to be signed in to book a listing!',
+      cantBookOwnListing: "You can't book your own listing!",
+      noHostWallet:
+        "The host has disconnected from Stripe and thus won't be able to recieve payments!",
     },
   },
   LISTINGS: {

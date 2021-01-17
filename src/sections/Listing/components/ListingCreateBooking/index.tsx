@@ -3,34 +3,58 @@ import React from 'react';
 import { Button, Card, DatePicker, Divider, Typography } from 'antd';
 import moment, { Moment } from 'moment';
 
+import { BookingsIndex } from './types';
+
 import { appStrings } from '../../../../i18n';
+import { Listing as ListingData } from '../../../../lib/graphql/queries/Listing/__generated__/Listing';
+import { Viewer } from '../../../../lib/types';
 import { displayErrorMessage, formatListingPrice } from '../../../../lib/utils';
 
 interface Props {
+  viewer: Viewer;
+  host: ListingData['listing']['host'];
   price: number;
+  bookingsIndex: ListingData['listing']['bookingsIndex'];
   checkInDate: Moment | null;
   checkOutDate: Moment | null;
   setCheckInDate: (checkInDate: Moment | null) => void;
   setCheckOutDate: (checkOutDate: Moment | null) => void;
 }
 
-const { Paragraph, Title } = Typography;
+const { Paragraph, Text, Title } = Typography;
 
 const {
   LISTING: { CREATE_BOOKING: lang },
 } = appStrings;
 
 export const ListingCreateBooking = ({
+  viewer,
+  host,
   price,
+  bookingsIndex,
   checkInDate,
   checkOutDate,
   setCheckInDate,
   setCheckOutDate,
 }: Props) => {
-  const disabledDate = (currentDate?: Moment): boolean => {
+  const bookingsIndexJSON: BookingsIndex = JSON.parse(bookingsIndex);
+
+  const dateIsBooked = (currentDate: Moment): boolean => {
+    const year = currentDate.year();
+    const month = currentDate.month();
+    const day = currentDate.date();
+
+    if (bookingsIndexJSON[year] && bookingsIndexJSON[year][month]) {
+      return Boolean(bookingsIndexJSON[year][month][day]);
+    }
+
+    return false;
+  };
+
+  const disabledDate = (currentDate: Moment | null): boolean => {
     if (currentDate) {
       const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf('day'));
-      return dateIsBeforeEndOfDay;
+      return dateIsBeforeEndOfDay || dateIsBooked(currentDate);
     }
     return false;
   };
@@ -40,12 +64,39 @@ export const ListingCreateBooking = ({
       if (moment(selectedCheckOutDate).isBefore(checkInDate, 'days')) {
         return displayErrorMessage(lang.dateError);
       }
+      let dateCursor = checkInDate;
+      while (moment(dateCursor).isBefore(selectedCheckOutDate, 'days')) {
+        dateCursor = moment(dateCursor).add(1, 'days');
+        const year = dateCursor.year();
+        const month = dateCursor.month();
+        const day = dateCursor.date();
+
+        if (
+          bookingsIndexJSON[year] &&
+          bookingsIndexJSON[year][month] &&
+          bookingsIndexJSON[year][month][day]
+        ) {
+          return displayErrorMessage(lang.dateOverlapsError);
+        }
+      }
     }
     setCheckOutDate(selectedCheckOutDate);
   };
 
+  const viewerIsHost = viewer.id === host.id;
+  const checkInInputDisabled = viewerIsHost || !viewer.id || !host.hasWallet;
   const checkOutInputDisabled = !checkInDate;
   const buttonDisabled = !checkInDate || !checkOutDate;
+
+  let buttonMessage = viewer.id ? lang.wontBeCharged : lang.signInRequird;
+
+  if (viewerIsHost) {
+    buttonMessage = lang.cantBookOwnListing;
+  }
+
+  if (!host.hasWallet) {
+    buttonMessage = lang.noHostWallet;
+  }
 
   return (
     <div className="listing-booking">
@@ -65,6 +116,7 @@ export const ListingCreateBooking = ({
               format="YYYY/MM/DD"
               showToday={false}
               disabledDate={disabledDate}
+              disabled={checkInInputDisabled}
               onChange={setCheckInDate}
               onOpenChange={() => setCheckOutDate(null)}
             />
@@ -90,6 +142,9 @@ export const ListingCreateBooking = ({
         >
           {lang.bookButton}
         </Button>
+        <Text type="secondary" mark>
+          {buttonMessage}
+        </Text>
       </Card>
     </div>
   );
