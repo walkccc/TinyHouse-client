@@ -43,6 +43,15 @@ export const appStrings = {
       details: 'Details',
       name: 'Name',
       contact: 'Contact',
+      stripeOnCompleteMessage: "You've successfully disconnected from Stripe!",
+      stripeOnCompleteDescription:
+        "You'll have to reconnect with Stripe to continue to create listings.",
+      stripeError: `Sorry, we weren't able to to disconnect you from Stripe. Please try again later.`,
+      stripeRegistered: 'Stripe Registered',
+      incomeEarned: 'Income Earned',
+      disconnectStripe: 'Disconnect Stripe',
+      disconnectWarning:
+        "By disconnecting, you won't be able to receive any further payments. This will prevent users from booking listings that you might have already created.",
     },
     LISTINGS: {
       listings: 'Listings',
