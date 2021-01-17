@@ -13,6 +13,20 @@ export const appStrings = {
     onCompleted: "You've successfully loggest out!",
     error: "Sorry! We weren't able to log you out. Please try again later!",
   },
+  HOME: {
+    title: 'Your guide for all things rental',
+    explantion: 'Helping you make the best decisions in renting your last minute locations.',
+    link: 'Popular listings in the United States',
+    homeListingTitle: 'Listings of any kind',
+    onSearchError: 'Please enter a valid search',
+    HERO: {
+      title: "Find a place you'll love to stay at",
+      dubai: 'Dubai',
+      london: 'London',
+      newYork: 'New York',
+      taipei: 'Taipei',
+    },
+  },
   USER: {
     error: "This user may not exist or we've encountered an error",
     PROFILE: {
