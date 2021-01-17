@@ -125,6 +125,14 @@ export const appStrings = {
       noHostWallet:
         "The host has disconnected from Stripe and thus won't be able to recieve payments!",
     },
+    CREATE_BOOKING_MODAL: {
+      title: 'Book your trip',
+      enterYourPayment: 'Enter your payment information to book the listing between',
+      and: 'and',
+      inclusive: ', inclusive.',
+      total: 'Total',
+      book: 'Book',
+    },
   },
   LISTINGS: {
     error:

@@ -6,7 +6,7 @@ import { Moment } from 'moment';
 import { useQuery } from 'react-apollo';
 import { useRouteMatch } from 'react-router-dom';
 
-import { ListingCreateBooking } from './components';
+import { ListingCreateBooking, ListingCreateBookingModal } from './components';
 import { ListingBookings } from './components/ListingBookings';
 import { ListingDetails } from './components/ListingDetails';
 
@@ -36,6 +36,7 @@ export const Listing = ({ viewer }: Props) => {
   const [bookingsPage, setBookingsPage] = useState(1);
   const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { data, loading, error } = useQuery<ListingData, ListingVariables>(LISTING, {
     variables: {
@@ -69,8 +70,20 @@ export const Listing = ({ viewer }: Props) => {
       checkOutDate={checkOutDate}
       setCheckInDate={setCheckInDate}
       setCheckOutDate={setCheckOutDate}
+      setModalVisible={setModalVisible}
     />
   ) : null;
+
+  const listingCreateBookingModalElement =
+    listing && checkInDate && checkOutDate ? (
+      <ListingCreateBookingModal
+        price={listing.price}
+        checkInDate={checkInDate}
+        checkOutDate={checkOutDate}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
+    ) : null;
 
   if (loading) {
     return (
@@ -100,6 +113,7 @@ export const Listing = ({ viewer }: Props) => {
           {listingCreateBookingElement}
         </Col>
       </Row>
+      {listingCreateBookingModalElement}
     </Content>
   );
 };
