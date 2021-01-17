@@ -61,9 +61,16 @@ export const appStrings = {
     },
   },
   LISTINGS: {
+    error:
+      "We either couldn't find anything matching your search or we've encountered an error. If you're searching for a unique location, try searching again with more common keywords.",
     emptyList: 'It appears that no listings have yet been created for',
     host: 'Be the first person to create a listing in this area!',
     results: 'Results for',
+    FILTERS: {
+      filterBy: 'Filter By',
+      priceLowToHigh: 'Price: Low to High',
+      priceHighToLow: 'Price: High to Low',
+    },
   },
   BOOKINGS: {
     bookings: 'Bookings',

@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Layout, List, Typography } from 'antd';
+import { Affix, Layout, List, Typography } from 'antd';
 import { useQuery } from 'react-apollo';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import { ListingsFilters, ListingsPagination, ListingsSkeleton } from './components';
+
 import { appStrings } from '../../i18n';
-import { ListingCard } from '../../lib/components';
+import { ErrorBanner, ListingCard } from '../../lib/components';
 import { ListingsFilter } from '../../lib/graphql/globalTypes';
 import { LISTINGS } from '../../lib/graphql/queries/Listings';
 import {
@@ -27,12 +29,15 @@ const { LISTINGS: lang } = appStrings;
 export const Listings = () => {
   const match = useRouteMatch<MatchParams>();
 
-  const { data } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
+  const [filter, setFilter] = useState(ListingsFilter.PRICE_LOW_TO_HIGH);
+  const [page, setPage] = useState(1);
+
+  const { data, loading, error } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
     variables: {
       location: match.params.location,
-      filter: ListingsFilter.PRICE_LOW_TO_HIGH,
+      filter,
       limit: PAGE_LIMIT,
-      page: 1,
+      page,
     },
   });
 
@@ -41,23 +46,34 @@ export const Listings = () => {
 
   const listingsSectionElement =
     listings && listings.result.length ? (
-      <List
-        grid={{
-          gutter: 12,
-          xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 4,
-          xl: 4,
-          xxl: 4,
-        }}
-        dataSource={listings.result}
-        renderItem={(listing) => (
-          <List.Item>
-            <ListingCard listing={listing} />
-          </List.Item>
-        )}
-      />
+      <div>
+        <Affix offsetTop={64}>
+          <ListingsPagination
+            total={listings.total}
+            limit={PAGE_LIMIT}
+            page={page}
+            setPage={setPage}
+          />
+          <ListingsFilters filter={filter} setFilter={setFilter} />
+        </Affix>
+        <List
+          grid={{
+            gutter: 12,
+            xs: 1,
+            sm: 2,
+            md: 2,
+            lg: 4,
+            xl: 4,
+            xxl: 4,
+          }}
+          dataSource={listings.result}
+          renderItem={(listing) => (
+            <List.Item>
+              <ListingCard listing={listing} />
+            </List.Item>
+          )}
+        />
+      </div>
     ) : (
       <div>
         <Paragraph>
@@ -74,6 +90,23 @@ export const Listings = () => {
       {lang.results} "{listingsRegion}"
     </Title>
   ) : null;
+
+  if (loading) {
+    return (
+      <Content className="listings">
+        <ListingsSkeleton />
+      </Content>
+    );
+  }
+
+  if (error) {
+    return (
+      <Content className="listing">
+        <ErrorBanner description={lang.error} />
+        <ListingsSkeleton />
+      </Content>
+    );
+  }
 
   return (
     <Content className="listings">
