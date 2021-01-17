@@ -33,6 +33,7 @@ export const appStrings = {
   },
   USER: {
     error: "This user may not exist or we've encountered an error",
+    stripeError: 'We had an issue connecting with Stripe. Please try again soon.',
     PROFILE: {
       additionalDetails: 'Additional Details',
       intereseted: 'Interested in becoming a TinyHouse host? Register with your Stripe account!',
@@ -83,6 +84,11 @@ export const appStrings = {
     checkOut: 'Check out',
     explanation:
       "This section highlights the bookings you've made, and the check-in/check-out dates associated with said bookings.",
+  },
+  STRIPE: {
+    onCompletedMessage: "You've successfully connected with your Stripe account!",
+    onCompletedDescription: 'You can now begin to create listings in the Host page.',
+    loading: 'Connecting your Stripe account...',
   },
   ERROR_BANNER: {
     message: 'Oh no! Something went wrong :(',

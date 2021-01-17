@@ -16,14 +16,22 @@ const {
 
 const { Paragraph, Text, Title } = Typography;
 
+const stripeAuthUrl =
+  'https://connect.stripe.com/oauth/authorize?response_type=code' +
+  `&client_id=${process.env.REACT_APP_STRIPE_CLIENT_ID}&scope=read_write`;
+
 export const UserProfile = ({ user, viewerIsUser }: Props) => {
+  const redirectToStripe = () => {
+    window.location.href = stripeAuthUrl;
+  };
+
   const additionalDetailsSection = viewerIsUser ? (
     <Fragment>
       <Divider />
       <div className="user-profile__details">
         <Title level={4}>{lang.additionalDetails}</Title>
         <Paragraph>{lang.intereseted}</Paragraph>
-        <Button type="primary" className="user-profile__details-cta">
+        <Button type="primary" className="user-profile__details-cta" onClick={redirectToStripe}>
           {lang.connectStripe}
         </Button>
         <Paragraph type="secondary">

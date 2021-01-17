@@ -14,7 +14,7 @@ import {
 } from './lib/graphql/mutations/LogIn/__generated__/LogIn';
 import { Viewer } from './lib/types';
 import reportWebVitals from './reportWebVitals';
-import { AppHeader, Home, Listing, Listings, Login, User } from './sections';
+import { AppHeader, Home, Listing, Listings, Login, Stripe, User } from './sections';
 
 import './index.css';
 
@@ -93,6 +93,11 @@ const App = () => {
             exact
             path="/login"
             render={(props) => <Login {...props} setViewer={setViewer} />}
+          />
+          <Route
+            exact
+            path="/stripe"
+            render={(props) => <Stripe {...props} viewer={viewer} setViewer={setViewer} />}
           />
           <Route exact path="/user/:id" render={(props) => <User {...props} viewer={viewer} />} />
         </Switch>
