@@ -38,6 +38,13 @@ export const appStrings = {
       about: 'About this space',
       guests: 'guests',
     },
+    CREATE_BOOKING: {
+      dateError: "You can't book date of check out to be prior to check in!",
+      day: 'day',
+      checkIn: 'Check in',
+      checkOut: 'Check out',
+      bookButton: 'Request to book!',
+    },
   },
   BOOKINGS: {
     bookings: 'Bookings',

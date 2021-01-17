@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 
 import { Col, Row } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
+import { Moment } from 'moment';
 import { useQuery } from 'react-apollo';
 import { useRouteMatch } from 'react-router-dom';
 
+import { ListingCreateBooking } from './components';
 import { ListingBookings } from './components/ListingBookings';
 import { ListingDetails } from './components/ListingDetails';
 
@@ -27,6 +29,8 @@ export const Listing = () => {
   const match = useRouteMatch<MatchParams>();
 
   const [bookingsPage, setBookingsPage] = useState(1);
+  const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
+  const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
 
   const { data, loading, error } = useQuery<ListingData, ListingVariables>(LISTING, {
     variables: {
@@ -47,6 +51,16 @@ export const Listing = () => {
       limit={PAGE_LIMIT}
       bookingsPage={bookingsPage}
       setBookingsPage={setBookingsPage}
+    />
+  ) : null;
+
+  const listingCreateBookingElement = listing ? (
+    <ListingCreateBooking
+      price={listing.price}
+      checkInDate={checkInDate}
+      checkOutDate={checkOutDate}
+      setCheckInDate={setCheckInDate}
+      setCheckOutDate={setCheckOutDate}
     />
   ) : null;
 
@@ -73,6 +87,9 @@ export const Listing = () => {
         <Col xs={24} lg={14}>
           {listingDetailsElement}
           {listingBookingsElement}
+        </Col>
+        <Col xs={24} lg={10}>
+          {listingCreateBookingElement}
         </Col>
       </Row>
     </Content>
