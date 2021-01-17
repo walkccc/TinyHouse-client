@@ -1,23 +1,40 @@
 import React from 'react';
 
 import { Col, Layout, Row, Typography } from 'antd';
+import { useQuery } from 'react-apollo';
 import { Link, useHistory } from 'react-router-dom';
 
 import cancunImage from './assets/cancun.jpg';
 import mapBackground from './assets/map-background.jpg';
 import sanFransiscoImage from './assets/san-fransisco.jpg';
-import { HomeHero } from './components';
+import { HomeHero, HomeListings, HomeListingsSkeleton } from './components';
 
 import { appStrings } from '../../i18n';
+import { ListingsFilter } from '../../lib/graphql/globalTypes';
+import { LISTINGS } from '../../lib/graphql/queries/Listings';
+import {
+  Listings,
+  ListingsVariables,
+} from '../../lib/graphql/queries/Listings/__generated__/Listings';
 import { displayErrorMessage } from '../../lib/utils';
 
 const { Content } = Layout;
 const { Paragraph, Title } = Typography;
 
 const { HOME: lang } = appStrings;
+const PAGE_LIMIT = 4;
+const PAGE_NUMBER = 1;
 
 export const Home = () => {
   const history = useHistory();
+
+  const { data, loading } = useQuery<Listings, ListingsVariables>(LISTINGS, {
+    variables: {
+      filter: ListingsFilter.PRICE_HIGH_TO_LOW,
+      limit: PAGE_LIMIT,
+      page: PAGE_NUMBER,
+    },
+  });
 
   const onSearch = (value: string) => {
     const trimmedValue = value.trim();
@@ -27,6 +44,17 @@ export const Home = () => {
     } else {
       displayErrorMessage(lang.onSearchError);
     }
+  };
+
+  const renderListingsSection = () => {
+    if (loading) {
+      return <HomeListingsSkeleton />;
+    }
+
+    if (data) {
+      return <HomeListings title="Premium Listings" listings={data.listings.result} />;
+    }
+    return null;
   };
 
   return (
@@ -44,6 +72,8 @@ export const Home = () => {
           {lang.link}
         </Link>
       </div>
+
+      {renderListingsSection()}
 
       <div className="home__listings">
         <Title level={4} className="home__listings-title">
