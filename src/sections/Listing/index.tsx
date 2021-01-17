@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { Col, Row } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import { Moment } from 'moment';
@@ -29,6 +31,7 @@ interface MatchParams {
 
 const { LISTING: lang } = appStrings;
 const PAGE_LIMIT = 3;
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY as string);
 
 export const Listing = ({ viewer }: Props) => {
   const match = useRouteMatch<MatchParams>();
@@ -76,13 +79,15 @@ export const Listing = ({ viewer }: Props) => {
 
   const listingCreateBookingModalElement =
     listing && checkInDate && checkOutDate ? (
-      <ListingCreateBookingModal
-        price={listing.price}
-        checkInDate={checkInDate}
-        checkOutDate={checkOutDate}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
+      <Elements stripe={stripePromise}>
+        <ListingCreateBookingModal
+          price={listing.price}
+          checkInDate={checkInDate}
+          checkOutDate={checkOutDate}
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
+      </Elements>
     ) : null;
 
   if (loading) {

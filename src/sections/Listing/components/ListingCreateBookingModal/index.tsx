@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { KeyOutlined } from '@ant-design/icons';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Modal, Button, Divider, Typography } from 'antd';
 import { Moment } from 'moment';
 
@@ -28,8 +29,26 @@ export const ListingCreateBookingModal = ({
   checkOutDate,
   setModalVisible,
 }: Props) => {
+  const stripe = useStripe();
+  const elements = useElements();
+
   const daysBooked = checkOutDate.diff(checkInDate, 'days') + 1;
   const listingPrice = daysBooked * price;
+
+  const handleCreateBooking = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const card = elements.getElement(CardElement);
+    if (!card) {
+      return;
+    }
+
+    await stripe.createPaymentMethod({ type: 'card', card });
+  };
 
   return (
     <Modal visible={modalVisible} centered footer={null} onCancel={() => setModalVisible(false)}>
@@ -72,7 +91,13 @@ export const ListingCreateBookingModal = ({
         <Divider />
 
         <div className="listing-booking-modal__stripe-card-section">
-          <Button size="large" type="primary" className="listing-booking-modal__cta">
+          <CardElement className="listing-booking-modal__stripe-card" />
+          <Button
+            size="large"
+            type="primary"
+            onClick={handleCreateBooking}
+            className="listing-booking-modal__cta"
+          >
             {lang.book}
           </Button>
         </div>
